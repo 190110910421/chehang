@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>购买成功！！！</title>
+<!-- bootstrap框架 -->
+<%-include('bt.ejs')%>
+</head>
+<body>
+	<!-- 导航栏 -->
+	<%-include('daohanglan.ejs')%>
+	<h1><strong><%= info %></strong></h1>
+	<h1><strong>总共花费：<%= price==null?'0':price %></strong></h1>
+	<small>3秒后自动跳转至主页面......</small>
+	<script> window.setInterval("location='zhuyemian'",3000); </script>
+</body>
+</html>
