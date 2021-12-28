@@ -1,0 +1,49 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<title>用户个人信息</title>
+<!-- bootstrap框架 -->
+<%-include('bt.ejs')%>
+</head>
+<body>
+	
+		<div class="container">
+			<%-include('daohanglan.ejs')%>
+			<div class="row" style="margin-top: 10px">
+				<%-include('userlf.ejs')%>
+				<div class="col-lg-9">
+					<div class="card">
+						<div class="card-header">用户信息</div>
+						<div class="card-body">
+							<div>
+							
+								<h2>用户信息如下：</h2>
+								<div class="row">
+									<div class="col-lg-6">
+										<p>用户名：<%= user.username %></p>
+										<p>性别：<%= user.sex %></p>
+										<p>出生年月：<%= user.birth %></p>
+										<p>收货地址：<%= user.address %></p>		
+										<p>邮箱：<%= user.email %></p>		
+										<p>注册时间：<%= user.username %></p>
+										<c:if test="<%= user.manager==true %>">
+											<p>是否是店家：是</p>
+										</c:if> 
+										<c:if test="<%= user.manager==false %>">
+											<p>是否是店家：否</p>
+										</c:if>
+										<p style="color: red"><%= info %></p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+</body>
+</html>
