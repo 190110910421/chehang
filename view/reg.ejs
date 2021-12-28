@@ -1,0 +1,120 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<title>用户注册</title>
+<!-- bootstrap框架 -->
+<%-include('bt.ejs')%>
+</head>
+<body>
+		<div class="container">
+		<!-- 导航栏 -->
+			<%-include('daohanglan.ejs')%>
+
+			<!-- 内容 -->
+			<div class="row" style="margin-top: 10px">
+			<!-- 左边栏 -->
+				<%-include('lf.ejs')%>
+
+
+				<div class="col-lg-9">
+
+
+					<div class="card">
+						<div class="card-header">用户注册</div>
+						<div class="card-body">
+
+							<p style="color: red"><%= info %></p>
+
+							<form method="post" action="/Request"
+								enctype="multipart/form-data">
+
+								<div class="form-group row">
+									<label for="inputEmail3" class="col-sm-3 col-form-label">用户名</label>
+									<div class="col-sm-6">
+										<input type="text" name="username" class="form-control"
+											id="inputEmail3" placeholder="用户名" pattern="[a-zA-Z_0-9]{3,}">
+										<small id="passwordHelpInline" class="text-muted">请输入至少3个字母或数字</small>
+									</div>
+								</div>
+
+
+								<div class="form-group row">
+									<label for="inputPassword3" class="col-sm-3 col-form-label">Password</label>
+									<div class="col-sm-6">
+										<input type="password" name="password" class="form-control"
+											id="inputPassword3" placeholder="密码"
+											pattern="[a-zA-Z_0-9]{6,18}"> 
+										<small id="passwordHelpInline" class="text-muted">请输入6-18个字母或数字</small>
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label for="inputPassword3" class="col-sm-3 col-form-label">性别</label>
+									<div class="col-sm-1">
+										<div class="form-check form-check-inline">
+
+											<input class="form-check-input" type="radio" name="sex"
+												value="男" id="sex1" checked> <label
+												class="form-check-label" for="sex1">男</label>
+
+										</div>
+									</div>
+									<div class="col-sm-1">
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" name="sex"
+												id="sex2" value="女"> <label class="form-check-label"
+												for="sex2">女</label>
+
+
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label for="inputPassword3" class="col-sm-3 col-form-label">出生年月</label>
+									<div class="col-sm-3">
+										<input type="date" name="birth" class="form-control"
+											id="inputPassword3" placeholder="生日" value="1980-01-01">
+									</div>
+								</div>	
+								<div class="form-group row">
+									<label for="inputPassword3" class="col-sm-3 col-form-label">收货地址</label>
+									<div class="col-sm-6">
+										<input type="text" name="address" class="form-control"
+											id="address" placeholder="收货地址"
+											> 
+									</div>
+								</div>		
+								<div class="form-group row">
+									<label for="inputPassword3" class="col-sm-3 col-form-label">email</label>
+									<div class="col-sm-6">
+										<input type="text" name="email" class="form-control"
+											id="email" placeholder="邮箱 "
+											> 
+									</div>
+								</div>					
+								<div class="form-group row">
+									<label for="inputPassword3" class="col-sm-3 col-form-label">选择头像</label>
+									<div class="custom-file">
+										<input type="file" class="custom-file-input" id="customFile"
+											name="photo" pattern="{1}"> <label class="custom-file-label"
+											for="customFile">Choose Picture</label>
+									</div>
+								</div>
+								<div class="form-group row">
+									<div class="col-sm-10">
+										<button type="submit" class="btn btn-primary">注册</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+
+		</div>
+</body>
+</html>
