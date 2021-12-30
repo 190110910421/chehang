@@ -260,24 +260,29 @@ app.get('/addgood.ejs',(req, res)=>{
 })
 
 //添加新商品
-app.post('/BeManager', (req, res) =>{
+app.post('/AddGoods', upload.single('photo'), (req, res) =>{
   var self = req.session.user
   realname=self.username
-  var username = req.body.username
-  var password = req.body.password
-  Mongoose.user.find({"username":username,"password":password}).function((err, user) => {
-      if(err) return console.log(err)
-      if(!user){
-        res.render('bemanager.ejs', {
-          user:self,
-          info:"用户名或密码错误"
+  var goodsname = req.body.goodsname
+  var price = req.body.price
+  var number = req.body.number
+  var status = req.body.status
+  var photo = req.file.filename
+  Mongoose.goods.findOne({"goodsname":goodsname,"username":username}).exec((err,goods)=>{
+    if(err) return console.log(err)
+    if(!goods){
+        Mongoose.InsertGoods(plantname, rarity, cost, saleprice, growtime, access ,photo)
+        res.render("addgood.ejs", {
+            info:"添加成功！",
+            user:user
         })
-      }else{
-          res.render('userInfo.ejs', {
-            user:self,
-            info:"您已成为店家"
-          })
-      }      
+    }
+    else{
+        res.render('addgood.ejs', {
+            user:user,
+            info:"该商品已经加入商店！"
+        })
+    }
   })
 })
 
