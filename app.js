@@ -115,15 +115,14 @@ app.post('/LoginAction',(req, res,next)=>{
 })
 
 //用户注册
-app.post('/Request',  upload.single('photo'), (req, res, next) => {
+app.post('/Request',  upload.single('headimg'), (req, res, next) => {
   var username = req.body.username
   var password = req.body.password
   var sex = req.body.sex
   var birth = req.body.birth
   var email = req.body.email
   var address = req.body.address
-  var headimg = headimg_default
-  if(req.file != null) headimg = req.file.filename
+  var headimg = req.file.filename
   var regtime = Mongoose.GetRegTime()
   var manager = req.body.manager
   Mongoose.User.findOne({"username":username}).exec((err,user) =>{
@@ -226,6 +225,59 @@ app.get('/bemanager.ejs',(req, res)=>{
   res.render('bemanager.ejs', {
       user:self,
       info:null
+  })
+})
+
+//成为店家
+app.post('/BeManager', (req, res) =>{
+  var self = req.session.user
+  realname=self.username
+  var username = req.body.username
+  var password = req.body.password
+  Mongoose.user.find({"username":username,"password":password}).function((err, user) => {
+      if(err) return console.log(err)
+      if(!user){
+        res.render('bemanager.ejs', {
+          user:self,
+          info:"用户名或密码错误"
+        })
+      }else{
+          res.render('userInfo.ejs', {
+            user:self,
+            info:"您已成为店家"
+          })
+      }      
+  })
+})
+
+//添加新商品页面
+app.get('/addgood.ejs',(req, res)=>{
+  var self = req.session.user
+  res.render('addgood.ejs', {
+      user:self,
+      info:null
+  })
+})
+
+//添加新商品
+app.post('/BeManager', (req, res) =>{
+  var self = req.session.user
+  realname=self.username
+  var username = req.body.username
+  var password = req.body.password
+  Mongoose.user.find({"username":username,"password":password}).function((err, user) => {
+      if(err) return console.log(err)
+      if(!user){
+        res.render('bemanager.ejs', {
+          user:self,
+          info:"用户名或密码错误"
+        })
+      }else{
+          res.render('userInfo.ejs', {
+            user:self,
+            info:"您已成为店家"
+          })
+      }      
   })
 })
 
