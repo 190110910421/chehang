@@ -1,12 +1,11 @@
 const mongoose = require("./db.js")
 
-const UserSchema = {   
+const UserSchema = {
     username: String,
     password: String,
     sex: String,
     email: String,
     regtime: String,
-    address: String,
     headimg: String,
     manager: Number
 }
