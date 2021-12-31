@@ -1,10 +1,7 @@
-const Goods = require("../modules/goods")
+const Car = require("../modules/car")
 const User = require("../modules/user")
-const Usershopping = require("../modules/usershopping")
+const Borrowcar = require("../modules/borrowcar")
 const { findOneAndDelete } = require("../modules/user")
-const Tracks = require("../modules/tracks")
-const Buyhistory = require("../modules/buyhistory")
-const Userreply = require("../modules/userreply")
 
 //获取准确时间
 function GetRegTime() {
@@ -20,15 +17,13 @@ function GetID() {
 }
 
 //用户注册
-function InsertUser(username, password, sex, birth,email,regtime,address,headimg, manager) {
+function InsertUser(username, password, sex,email,regtime,headimg, manager) {
     var user = new User({
         username: username,
         password: password,
         sex: sex,
-        birth: birth,
         email: email,      
         regtime: regtime,
-        address: address,
         headimg: headimg,
         manager: manager
     })
@@ -39,126 +34,50 @@ function InsertUser(username, password, sex, birth,email,regtime,address,headimg
 }
 
 //添加新商品
-function InsertGoods(username, goodsname, price, number, status, photo) {
+function InsertCar(goodsname, price, status, photo) {
     var id=GetID()
-    var goods = new Goods({
+    var car = new Car({
         id:id,
-        username: username,
         goodsname: goodsname,
         price: price,
-        number: number,
         photo: photo,
-        status: status
+        status1: status,
+        status2: 0
     })
-    goods.save((err) => {
+    car.save((err) => {
         if(err) return console.log(err)
-        console.log("插入goods成功!")
+        console.log("插入car成功!")
     })
 }
 
-//把商品添加到购物车
-function InsertShopGoods(goods,number,username) {
+//借车
+function borrowCar(goodid,username,time,car) {
     var id=GetID()
-    Usershopping.findOne({"id":goods.id,"username":username}).exec((err, usershopping) => {
+    
+    Car.updateOne({"id":car.id},{"status2":1},(err) => {
         if(err) return console.log(err)
-        if(!usershopping){
-            var usershopping = new Usershopping({
-                id:id,
-                username: username,
-                goodid: goods.id,
-                number: number,
-                price:goods.price,
-                goodsname:goods.goodsname
-            })
-            usershopping.save((err) => {
-                if(err) return console.log(err)
-                console.log("加入购物车成功！")
-            })
-        }else{
-            Usershopping.updateOne({"username":username,"goodid":goods.id},{"number":number+usershopping.number},(err) => {
-                if(err) return console.log(err)
-                console.log("加入购物车成功！")
-            })
-        } 
-    })    
-}
-
-//添加浏览记录
-function InsertTracks(username,time,goodid) {
-    var id=GetID()
-    Tracks.findOne({"goodid":goodid,"username":username}).exec((err, tracks) => {
-        if(err) return console.log(err)
-        if(!tracks){
-            Goods.findOne({"id":goodid,"username":username}).exec((err, goods) => {
-                console.log(goods.goodsname)
-                if(err) return console.log(err)
-                var tracks = new Tracks({
-                    id:id,
-                    username: username,
-                    goodid: goodid,
-                    goodsname:goods.goodsname,
-                    clicktime: time,
-                    photo: goods.photo,
-                })
-                tracks.save((err) => {
-                    if(err) return console.log(err)
-                    console.log("加入足迹成功！")
-                })
-            }) 
-        }else{
-            Tracks.updateOne({"username":username,"goodid":goodid},{"clicktime":time},(err) => {
-                if(err) return console.log(err)
-                console.log("加入足迹成功！")
-            })
-        }
-       
-    })    
-}
-
-//购买商品
-function BuyGoods(goodid,number,username,time) {
-    var id=GetID()
-    Goods.findOne({"id":goodid}).exec((err, goods) => {
-        if(err) return console.log(err)
-        Goods.updateOne({"id":goodid},{"number":goods.number-number},(err) => {
-            if(err) return console.log(err)
-            console.log("购买成功！")
-            var buyhistory = new Buyhistory({
-                id:id,
-                username: username,
-                goodid: goodid,
-                time:time,
-                photo: goods.photo,
-                status: 0,
-            })
-            buyhistory.save((err) => {
-                if(err) return console.log(err)
-                console.log("购买历史添加成功！")
-            })
-        })     
-    })    
-}
-
-//添加评论
-function InsertReply(goodid,username,text,time,idx){
-    var id=GetID()
-    console.log("---------------"+idx+"-"+goodid)
-    Buyhistory.updateOne({"id":idx,"username":username},{"status":1},(err) => {
-        if(err) return console.log(err)
-        console.log("评论状态更改")
-        var userreply = new Userreply({
+        console.log(car.id)
+        var borrowcar = new Borrowcar({
             id:id,
-            username: username,
-            goodid: goodid,
+            username:username,
+            goodsname: car.goodsname,
+            price: car.price,
+            photo: car.photo,
             time: time,
-            text: text
         })
-        userreply.save((err) => {
+        borrowcar.save((err) => {
             if(err) return console.log(err)
-            console.log("评论添加成功！")
+            console.log("插入car成功!")
         })
-    })     
+    })        
+}
 
+//还车
+function returnCar(goodid) {
+
+    Car.updateOne({"id":goodid},{"static2":0},(err) => {
+        if(err) return console.log(err)
+    })        
 }
 
 //修改密码
@@ -169,38 +88,23 @@ function setPwd(username, password) {
     })
 }
 
-//商品上架
-function Restoregoods(goodid) {
-    Goods.updateOne({"id":goodid},{"status":1},(err) => {
+//车上架
+function RestoreCar(goodid) {
+    Car.updateOne({"id":goodid},{"status1":1},(err) => {
         if(err) return console.log(err)
         console.log("上架成功！")
     })
 }
 
-//商品下架
-function Invalidgoods(goodid) {
+//车下架
+function InvalidCar(goodid) {
     console.log(goodid)
-    Goods.updateOne({"id":goodid},{"status":0},(err) => {
+    Car.updateOne({"id":goodid},{"status1":0},(err) => {
         if(err) return console.log(err)
         console.log("下架成功！")
     })
 }
 
-//修改商品信息
-function ModifyGoods(goodsname,number,username,price){
-    Goods.updateOne({"username":username,"goodsname":goodsname},{"number":number,"price":price},(err) => {
-        if(err) return console.log(err)
-        console.log("修改商品信息成功！")
-    })
-}
-
-//成为店家
-function Bemanager(username) {
-    User.updateOne({"username":username},{"manager":2},(err) => {
-        if(err) return console.log(err)
-        console.log("成为店家！")
-    })
-}
 
 
 //状态判断
@@ -214,6 +118,4 @@ function getStatusCn(static){
 }
 
 
-module.exports = {User,Goods,Usershopping,Tracks,Buyhistory,Userreply,InsertUser,GetRegTime,
-    setPwd,getStatusCn,Bemanager,ModifyGoods,InsertReply,BuyGoods,InsertTracks,InsertShopGoods,
-    InsertGoods,Restoregoods,Invalidgoods,GetID}
+module.exports = {User,Car,Borrowcar,returnCar,InsertCar,InsertUser,GetRegTime,setPwd,getStatusCn,borrowCar,InvalidCar,RestoreCar,GetID}
