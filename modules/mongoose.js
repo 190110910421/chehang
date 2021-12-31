@@ -9,7 +9,13 @@ const Userreply = require("../modules/userreply")
 //获取准确时间
 function GetRegTime() {
     var d = new Date()
-    var time = d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()
+    var time = d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate() + "-" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()
+    return time
+}
+
+function GetID() {
+    var d = new Date()
+    var time = d.getFullYear() + "" + d.getMonth() + "" + d.getDate() + "" + d.getHours() + "" + d.getMinutes() + "" + d.getSeconds()
     return time
 }
 
@@ -34,7 +40,7 @@ function InsertUser(username, password, sex, birth,email,regtime,address,headimg
 
 //添加新商品
 function InsertGoods(username, goodsname, price, number, status, photo) {
-    var id=GetRegTime()
+    var id=GetID()
     var goods = new Goods({
         id:id,
         username: username,
@@ -51,37 +57,43 @@ function InsertGoods(username, goodsname, price, number, status, photo) {
 }
 
 //把商品添加到购物车
-function InsertShopGoods(goodid,number,username) {
-        Usershopping.findOne({"id":goodid,"username":username}).exec((err, usershopping) => {
+function InsertShopGoods(goods,number,username) {
+    var id=GetID()
+    Usershopping.findOne({"id":goods.id,"username":username}).exec((err, usershopping) => {
         if(err) return console.log(err)
         if(!usershopping){
             var usershopping = new Usershopping({
+                id:id,
                 username: username,
-                goodid: goodid,
-                number: number
+                goodid: goods.id,
+                number: number,
+                price:goods.price,
+                goodsname:goods.goodsname
             })
             usershopping.save((err) => {
                 if(err) return console.log(err)
                 console.log("加入购物车成功！")
             })
         }else{
-            Usershopping.updateOne({"username":username,"goodid":goodid},{"number":number+usershopping.number},(err) => {
+            Usershopping.updateOne({"username":username,"goodid":goods.id},{"number":number+usershopping.number},(err) => {
                 if(err) return console.log(err)
                 console.log("加入购物车成功！")
             })
-        }
-       
+        } 
     })    
 }
 
 //添加浏览记录
 function InsertTracks(username,time,goodid) {
+    var id=GetID()
     Tracks.findOne({"goodid":goodid,"username":username}).exec((err, tracks) => {
         if(err) return console.log(err)
         if(!tracks){
             Goods.findOne({"id":goodid,"username":username}).exec((err, goods) => {
+                console.log(goods.goodsname)
                 if(err) return console.log(err)
                 var tracks = new Tracks({
+                    id:id,
                     username: username,
                     goodid: goodid,
                     goodsname:goods.goodsname,
@@ -105,12 +117,14 @@ function InsertTracks(username,time,goodid) {
 
 //购买商品
 function BuyGoods(goodid,number,username,time) {
+    var id=GetID()
     Goods.findOne({"id":goodid}).exec((err, goods) => {
         if(err) return console.log(err)
         Goods.updateOne({"id":goodid},{"number":goods.number-number},(err) => {
             if(err) return console.log(err)
             console.log("购买成功！")
             var buyhistory = new Buyhistory({
+                id:id,
                 username: username,
                 goodid: goodid,
                 time:time,
@@ -126,17 +140,25 @@ function BuyGoods(goodid,number,username,time) {
 }
 
 //添加评论
-function InsertReply(goodid,username,text,time){
-    var userreply = new userreply({
-        username: username,
-        goodid: goodid,
-        time: time,
-        text: text
-    })
-    userreply.save((err) => {
+function InsertReply(goodid,username,text,time,idx){
+    var id=GetID()
+    console.log("---------------"+idx+"-"+goodid)
+    Buyhistory.updateOne({"id":idx,"username":username},{"status":1},(err) => {
         if(err) return console.log(err)
-        console.log("评论添加成功！")
-    })
+        console.log("评论状态更改")
+        var userreply = new Userreply({
+            id:id,
+            username: username,
+            goodid: goodid,
+            time: time,
+            text: text
+        })
+        userreply.save((err) => {
+            if(err) return console.log(err)
+            console.log("评论添加成功！")
+        })
+    })     
+
 }
 
 //修改密码
@@ -166,7 +188,7 @@ function Invalidgoods(goodid) {
 
 //修改商品信息
 function ModifyGoods(goodsname,number,username,price){
-    User.updateOne({"username":username,"goodsname":goodsname},{"number":number,"price":price},(err) => {
+    Goods.updateOne({"username":username,"goodsname":goodsname},{"number":number,"price":price},(err) => {
         if(err) return console.log(err)
         console.log("修改商品信息成功！")
     })
@@ -174,7 +196,7 @@ function ModifyGoods(goodsname,number,username,price){
 
 //成为店家
 function Bemanager(username) {
-    User.updateOne({"username":username},{"manager":1},(err) => {
+    User.updateOne({"username":username},{"manager":2},(err) => {
         if(err) return console.log(err)
         console.log("成为店家！")
     })
@@ -194,4 +216,4 @@ function getStatusCn(static){
 
 module.exports = {User,Goods,Usershopping,Tracks,Buyhistory,Userreply,InsertUser,GetRegTime,
     setPwd,getStatusCn,Bemanager,ModifyGoods,InsertReply,BuyGoods,InsertTracks,InsertShopGoods,
-    InsertGoods,Restoregoods,Invalidgoods}
+    InsertGoods,Restoregoods,Invalidgoods,GetID}

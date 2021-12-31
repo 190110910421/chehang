@@ -46,12 +46,11 @@
 	</div>
 
 
-	<form class="form-inline my-10 my-lg-3" method="post"
-		action="/SearchGoods">
+	<form class="form-inline my-10 my-lg-3" >
 		<div class="mx-auto">
 			<input class="form-control col-md-10" type="search"
-				placeholder="<%= key==null?'search':key %>" aria-label="Search" name="search">
-			<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+				placeholder="search" aria-label="Search" name="search">
+			<button class="btn btn-outline-success my-2 my-sm-0" type="button">Search</button>
 		</div>
 	</form>
 	<div class="album py-5 bg-light">
@@ -86,7 +85,7 @@
 														<div class="modal-header">
 															<h5 class="modal-title" id="addLabel">添加商品到购物车</h5>
 															</div>
-														<form method="post" action="/AddShopGoods">
+														<form method="GET" action="/AddShopGoods">
 															<input type="hidden" id="id1" name="id" value=''>
 															<div class="modal-body">
 	

@@ -23,13 +23,13 @@
 									<p>价格 ：$ <%= good.price %></p>
 									<p>库存数量：<%= good.number %></p>
 									<p>商家：<%= good.username %></p>
+									<p>ID：<%= good.id %></p>
 								</div>
 								<div class="col-lg-6">
 									<img src="upload/<%= good.photo %>" style="width: 90%">
 								</div>
 							</div>
 							<div class="btn-group">
-
 								<input type="button" class="btn btn-sm btn-outline-secondary"
 									data-toggle="modal" data-target="#add" data-whatever="@mdo"
 									onclick="Values('<%= good.id %>')" value="添加到购物车" />
@@ -42,7 +42,7 @@
 											<div class="modal-header">
 												<h5 class="modal-title" id="addLabel">添加商品到购物车</h5>
 											</div>
-											<form method="post" action="/AddShopGoods">
+											<form method="GET" action="/AddShopGoods">
 												<input type="hidden" id="id1" name="id" value=''>
 												<div class="modal-body">
 

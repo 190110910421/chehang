@@ -1,6 +1,7 @@
 const mongoose = require("./db.js")
 
-const BuyhistorySchema = {   
+const BuyhistorySchema = {  
+    id:String,
     username: String,
     goodid: String,
     time:String,

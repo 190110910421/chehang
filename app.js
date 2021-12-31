@@ -133,7 +133,7 @@ app.post('/Request',  upload.single('headimg'), (req, res, next) => {
   var address = req.body.address
   var headimg = req.file.filename
   var regtime = Mongoose.GetRegTime()
-  var manager = req.body.manager
+  var manager = 1
   Mongoose.User.findOne({"username":username}).exec((err,user) =>{
       if(!user){
           Mongoose.InsertUser(username, password, sex, birth, email,regtime,address,headimg,manager);
@@ -197,6 +197,7 @@ app.get('/AllShopping', (req, res) => {
   var username=self.username
 
   Mongoose.Usershopping.find({"username": username}).exec((err, goodsList) => {
+      console.log(goodsList.length)
       if(err) return console.log(err)
       res.render('usershopping.ejs', {
         user:self,
@@ -212,7 +213,7 @@ app.get('/Allbuyhistorygood', (req, res) => {
   var self = req.session.user
   var username=self.username
 
-  Mongoose.Usershopping.find({"username": username}).exec((err, goodsList) => {
+  Mongoose.Buyhistory.find({"username": username}).exec((err, goodsList) => {
       if(err) return console.log(err)
       res.render('userbuyhistory.ejs', {
         user:self,
@@ -264,11 +265,22 @@ app.get('/bemanager.ejs',(req, res)=>{
 app.get('/addgoods.ejs',(req, res)=>{
   var self = req.session.user
   var username=self.username
-  res.render('addgoods.ejs', {
-      user:self,
-      username:username,
-      info:null
-  })
+  Mongoose.User.findOne({"username":username}).exec((err, user) => {
+    if(err) return console.log(err)
+    if(user.manager==1){
+      res.render('bemanager.ejs', {
+        user:self,
+        username:username,
+        info:"请先成为店家"
+      })
+    }else{
+      res.render('addgoods.ejs', {
+          user:self,
+          username:username,
+          info:null
+      })
+    }    
+  })    
 })
 
 //成为店家
@@ -301,6 +313,8 @@ app.get('/Restoregoods', (req, res) =>{
   var self = req.session.user
   var username=self.username
   var goodid = req.body.id
+  var suburl = req.url.split('?')[1]
+  var goodid = suburl.split("=")[1]
   Mongoose.Restoregoods(goodid)
   Mongoose.Goods.find({"username":username}).exec((err, goodsList) => {
     if(err) return console.log(err)
@@ -308,6 +322,7 @@ app.get('/Restoregoods', (req, res) =>{
       user:self,
       username:username,
       goodsList:goodsList,
+      info:null,
     })
   })    
 })
@@ -316,7 +331,8 @@ app.get('/Restoregoods', (req, res) =>{
 app.get('/Invalidgoods', (req, res) =>{
   var self = req.session.user
   var username=self.username
-  var goodid = req.body.id
+  var suburl = req.url.split('?')[1]
+  var goodid = suburl.split("=")[1]
   Mongoose.Invalidgoods(goodid)
   Mongoose.Goods.find({"username":username}).exec((err, goodsList) => {
     if(err) return console.log(err)
@@ -324,30 +340,32 @@ app.get('/Invalidgoods', (req, res) =>{
       user:self,
       username:username,
       goodsList:goodsList,
+      info:null,
     })
   })    
 })
 
-//添加新商品页面
-app.get('/addgood.ejs',(req, res)=>{
-  var self = req.session.user
-  var username=self.username
-  res.render('addgood.ejs', {
-      user:self,
-      username:username,
-      info:null
-  })
-})
-
-//修改商店页面
+//修改商品页面
 app.get('/modifygoods.ejs',(req, res)=>{
   var self = req.session.user
   var username=self.username
-  res.render('modifygoods.ejs', {
-      user:self,
-      username:username,
-      info:null
-  })
+
+  Mongoose.User.findOne({"username":username}).exec((err, user) => {
+    if(err) return console.log(err)
+    if(user.manager==1){
+      res.render('bemanager.ejs', {
+        user:self,
+        username:username,
+        info:"请先成为店家"
+      })
+    }else{
+      res.render('modifygoods.ejs', {
+        user:self,
+        username:username,
+        info:null
+      })
+    }    
+  })    
 })
 
 //添加新商品
@@ -392,6 +410,7 @@ app.get('/AllGoods', (req, res) => {
         user:self,
         username:username,
         goodsList:goodsList,
+        info:null
       })
   })
 })
@@ -427,11 +446,16 @@ app.get('/AddShopGoods', (req, res) => {
   console.log("1")
   var self = req.session.user
   var username=self.username
-  var goodid = req.body.id
-  var number = req.body.number
+  var suburl = req.url.split('?')[1]
+  var x = suburl.split("&")
+  var goodid = x[0].split("=")[1]
+  var number = x[1].split("=")[1]
+  // console.log(goodid)
   Mongoose.Goods.findOne({"id":goodid}).exec((err,goods)=>{
     if(err) return console.log(err)
-    console.log("2")
+    // console.log("22222222")
+    // console.log("1:"+number)
+    // console.log("2:"+goods.number)
     if(number>goods.number){
       Mongoose.Goods.find({},function(err, goodsList){
         if(err) return console.log(err)
@@ -445,7 +469,7 @@ app.get('/AddShopGoods', (req, res) => {
       })
     }else{
       console.log("3")
-      Mongoose.InsertShopGoods(goodid,number)
+      Mongoose.InsertShopGoods(goods,number,username)
       Mongoose.Goods.find({},function(err, goodsList){
         if(err) return console.log(err)
         res.render("zhuyemian.ejs", {
@@ -464,18 +488,23 @@ app.get('/AddShopGoods', (req, res) => {
 app.post('/AddReply', (req, res) => {
   var self = req.session.user
   var username=self.username
-  var goodid = req.body.id
+  var id = req.body.id
   var text = req.body.text
   var time = Mongoose.GetRegTime()
-  Mongoose.InsertReply(goodid,username,text,time)
-  Mongoose.Usershopping.find({"username": username}).exec((err, goodsList) => {
+  console.log("ud:"+id)
+  Mongoose.Buyhistory.findOne({"id":id}).exec((err, history) => {
     if(err) return console.log(err)
-    res.render('userbuyhistory.ejs', {
-      user:self,
-      username:username,
-      goodsList:goodsList,
+    Mongoose.InsertReply(history.goodid,username,text,time,id)
+    Mongoose.Buyhistory.find({"username": username}).exec((err, goodsList) => {
+    if(err) return console.log(err)
+      res.render('userbuyhistory.ejs', {
+        user:self,
+        username:username,
+        goodsList:goodsList,
+      })
     })
   })
+  
 })
 
 //直接购买商品
@@ -512,14 +541,17 @@ app.post('/Directbuygoods', (req, res) => {
 })
 
 //购物车购买商品
-app.post('/Buygoods', (req, res) => {
+app.get('/Buygoods', (req, res) => {
   var self = req.session.user
   var username=self.username
-  var id = req.body.id
+  var suburl = req.url.split('?')[1]
+  var id = suburl.split("=")[1]
   Mongoose.Usershopping.findOne({"id":id}).exec((err,usershopping)=>{
     if(err) return console.log(err)
     Mongoose.Goods.findOne({"id":usershopping.goodid}).exec((err,goods)=>{
       if(err) return console.log(err)
+      // console.log(usershopping.number)
+      // console.log(id)
       if(usershopping.number>goods.number){
         Mongoose.Usershopping.find({},function(err, goodsList){
           if(err) return console.log(err)
@@ -534,31 +566,48 @@ app.post('/Buygoods', (req, res) => {
         var price = usershopping.number*goods.price
         var time = Mongoose.GetRegTime()
         Mongoose.BuyGoods(usershopping.goodid,usershopping.number,username,time)
-        res.render("buyresult.ejs", {
-            info:"购买成功！",
-            price:price,
-            user:self,
-            username:username,
-        })
+        Mongoose.Usershopping.findOneAndRemove({"id":id}, (err, data) => {
+          if(err) {
+              console.log("删除商品失败")  
+              console.log(err)
+              return
+          }
+          console.log("删除商品成功")  
+            res.render("buyresult.ejs", {
+              info:"购买成功！",
+              price:price,
+              user:self,
+              username:username,
+          })
+        })  
       }    
     })       
   })
 })
 
 //购物车删除商品
-app.post('/Deletegoods', (req, res) => {
+app.get('/Deletegoods', (req, res) => {
   var self = req.session.user
   var username=self.username
-  var id = req.body.id
+  var suburl = req.url.split('?')[1]
+  var id = suburl.split("=")[1]
   Mongoose.Usershopping.findOneAndRemove({"id":id}, (err, data) => {
     if(err) {
-        if(callback){callback()}
         console.log("删除商品失败")  
         console.log(err)
         return
     }
-    if(callback){callback()}
     console.log("删除商品成功")  
+    Mongoose.Usershopping.find({"username": username}).exec((err, goodsList) => {
+      // console.log(goodsList.length)
+      if(err) return console.log(err)
+      res.render('usershopping.ejs', {
+        user:self,
+        username:username,
+        goodsList:goodsList,
+        info:"删除商品成功！"
+      })
+    })
   })
 })
 
@@ -569,24 +618,24 @@ app.post('/ModifyGoods', (req, res) => {
   var goodsname = req.body.goodsname
   var number = req.body.number
   var price = req.body.price
-  Mongoose.Goods.findOne({"goodsname":goodsname,"price":price,"username":username}).exec((err,goods)=>{
+  Mongoose.Goods.findOne({"goodsname":goodsname,"username":username}).exec((err,goods)=>{
     if(err) return console.log(err)
     if(!goods){
-      Mongoose.Goods.find({},function(err, goodsList){
-        if(err) return console.log(err)
-        res.render("modifygoods.ejs", {
-            info:"请把信息填写完整!",
-            user:self,
-            username:username,
-            goodsList:goodsList
-        })
+      res.render("modifygoods.ejs", {
+          info:"请把信息填写完整!",
+          user:self,
+          username:username,
       })
     }else{
       Mongoose.ModifyGoods(goodsname,number,username,price) 
-      res.render("modifygoods.ejs", {
+      Mongoose.Goods.find({"username":username}).exec((err, goodsList) => {
+        if(err) return console.log(err)
+        res.render('usergoods.ejs', {
           user:self,
           username:username,
+          goodsList:goodsList,
           info:"修改成功！"
+        })
       })
     }           
   })

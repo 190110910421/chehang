@@ -1,4 +1,3 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,7 +33,7 @@
 										<tr>
 											<th scope="row"><%= i %></th>
 											<td><%= goodsList[i].goodname %></td>
-											<td><img src="photo/<%= goodsList[i].photo %>" style="width: 90%"></td>
+											<td><img src="upload/<%= goodsList[i].photo %>" style="width: 90%"></td>
 											<td><%= goodsList[i].shopusername %></td>
 											<td><%= goodsList[i].time %></td>
 											<td>
@@ -42,9 +41,9 @@
 												<input type="button"
 													class="btn btn-sm btn-outline-secondary" data-toggle="modal"
 													data-target="#add" data-whatever="@mdo"
-													onclick="Values('<%= goodsList[i].goodid %>')" value="评价" />
+													onclick="Values('<%= goodsList[i].id %>')" value="评价" />
 											<% } %>
-											<% if(goodsList[i].status==0){ %>
+											<% if(goodsList[i].status==1){ %>
 												<button class="btn btn-sm btn-outline-secondary">已评价</button>
 											<% } %>
 												<div class="modal fade" id="add" tabindex="-1" role="dialog"
