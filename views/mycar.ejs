@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>我的订单</title>
+<!-- bootstrap框架 -->
+<%-include('bt.ejs')%>
+</head>
+<body>
+
+	<div class="container">
+		<div class="row" style="margin-top: 10px">
+			<%-include('userlf.ejs')%>
+			<div class="col-lg-9">
+				<div class="card">
+					<div class="card-header">车行</div>
+					<div class="card-body">
+						<p style="color: red"><%= info %></p>
+						<table class="table">
+							<thead class="thead-dark">
+								<tr>
+									<th scope="col">序号</th>
+									<th scope="col">商品名称</th>
+									<th scope="col">商品图像</th>
+									<th scope="col">操作</th>
+								</tr>
+							</thead>
+							<tbody>
+								<% if(goodsList){ %>
+									<% for(var i = 0; i < goodsList.length; i++) { %>
+										<tr>
+											<th scope="row"><%= i %></th>
+											<td><%= goodsList[i].goodname %></td>
+											<td><img src="upload/<%= goodsList[i].photo %>" style="width: 90%"></td>
+											<td><a type="button" class="btn btn-primary"
+												href="/DeleteCar?id=<%= goodsList[i].id %>">还车</a></td>
+										</tr>
+									<% } %>
+								<% } %>
+							</tbody>
+
+						</table>
+						<nav aria-label="Page navigation example">
+							<ul class="pagination">
+								<li class="page-item"><a class="page-link" href="#">Previous</a></li>
+								<li class="page-item"><a class="page-link" href="#">1</a></li>
+								<li class="page-item"><a class="page-link" href="#">2</a></li>
+								<li class="page-item"><a class="page-link" href="#">3</a></li>
+								<li class="page-item"><a class="page-link" href="#">Next</a></li>
+							</ul>
+						</nav>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

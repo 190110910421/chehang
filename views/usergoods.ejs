@@ -9,46 +9,49 @@
 <body>
 
 	<div class="container">
-		<%-include('daohanglan.ejs')%>
 			<div class="row" style="margin-top: 10px">
 				<%-include('userlf.ejs')%>
 				<div class="col-lg-9">
 					<div class="card">
-						<div class="card-header">小店商品</div>
+						<div class="card-header">车行管理</div>
 						<div class="card-body">
 							<p style="color: red"><%= info %></p>
 							<table class="table">
 								<thead class="thead-dark">
 									<tr>
 										<th scope="col">序号</th>
-										<th scope="col">商品名称</th>
-										<th scope="col">商品价格</th>
-										<th scope="col">库存数量</th>
-										<th scope="col">商品状态</th>
+										<th scope="col">车辆名称</th>
+										<th scope="col">车辆价格</th>
+										<th scope="col">商品状态1</th>
+										<th scope="col">商品状态2</th>
 										<th scope="col">操作</th>
 									</tr>
 								</thead>
 								<tbody>
-									<% if(goodsList){ %>
-										<% for(var i = 0; i < goodsList.length; i++) { %>
+									<% if(carList){ %>
+										<% for(var i = 0; i < carList.length; i++) { %>
 											<tr> 
 												<th scope="row"><%= i %></th>
-												<td><%= goodsList[i].goodsname %></td>
-												<td><%= goodsList[i].price %></td>
-												<td><%= goodsList[i].number %></td>
+												<td><%= carList[i].goodsname %></td>
+												<td><%= carList[i].price %></td>
 												<td>
 													<button type="button"
-														class="btn btn-<%= goodsList[i].status?'primary':'danger' %>">
-														<%= goodsList[i].status?"商品在售":'商品未售' %></button>
+														class="btn btn-<%= carList[i].status1?'primary':'danger' %>">
+														<%= carList[i].status1?"商品在售":'商品未售' %></button>
 												</td>
 												<td>
-													<% if(goodsList[i].status==1){ %>
+													<button type="button"
+														class="btn btn-<%= carList[i].status2?'danger':'primary' %>">
+														<%= carList[i].status2?"车辆租出":'车辆未租出' %></button>
+												</td>
+												<td>
+													<% if(carList[i].status1==1){ %>
 														<a type="button" class="btn btn-danger"
-															href="/Invalidgoods?id=<%= goodsList[i].id %>">商品下架</a>
+															href="/Invalidgoods?id=<%= carList[i].id %>">车辆下架</a>
 													<% } %> 
-													<% if(goodsList[i].status==0){ %>
+													<% if(carList[i].status1==0){ %>
 														<a type="button" class="btn btn-primary"
-															href="/Restoregoods?id=<%= goodsList[i].id %>">商品上架</a>
+															href="/Restoregoods?id=<%= carList[i].id %>">车辆上架</a>
 													<% } %> 
 												</td>
 											</tr>
@@ -57,17 +60,7 @@
 								</tbody>
 								
 							</table>
-							<nav aria-label="Page navigation example">
-								<ul class="pagination">
-									<li class="page-item"><a class="page-link" href="#">Previous</a></li>
-									<li class="page-item"><a class="page-link" href="#">1</a></li>
-									<li class="page-item"><a class="page-link" href="#">2</a></li>
-									<li class="page-item"><a class="page-link" href="#">3</a></li>
-									<li class="page-item"><a class="page-link" href="#">Next</a></li>
-								</ul>							
-							</nav>
-							<a type="button" class="btn btn-primary" href="addgoods.ejs">添加新商品</a>
-							<a type="button" class="btn btn-primary" href="modifygoods.ejs">修改商品属性</a>
+							<a type="button" class="btn btn-primary" href="addgoods.ejs">添加新车</a>
 						</div>
 					</div>
 				</div>

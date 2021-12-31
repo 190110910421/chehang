@@ -7,9 +7,7 @@
 </head>
 <body>
 		<div class="container">
-		<!-- 导航栏 -->
-			<%-include('daohanglan.ejs')%>
-
+		
 			<!-- 内容 -->
 			<div class="row" style="margin-top: 10px">
 			<!-- 左边栏 -->
@@ -69,22 +67,28 @@
 										</div>
 									</div>
 								</div>
+								<div class="form-group row">
+									<label for="inputPassword3" class="col-sm-3 col-form-label">是否是管理员</label>
+									<div class="col-sm-1">
+										<div class="form-check form-check-inline">
 
-								<div class="form-group row">
-									<label for="inputPassword3" class="col-sm-3 col-form-label">出生年月</label>
-									<div class="col-sm-3">
-										<input type="date" name="birth" class="form-control"
-											id="inputPassword3" placeholder="生日" value="1980-01-01">
+											<input class="form-check-input" type="radio" name="manager"
+												value="yes" id="manager1" checked> <label
+												class="form-check-label" for="sex1">yes</label>
+
+										</div>
 									</div>
-								</div>	
-								<div class="form-group row">
-									<label for="inputPassword3" class="col-sm-3 col-form-label">收货地址</label>
-									<div class="col-sm-6">
-										<input type="text" name="address" class="form-control"
-											id="address" placeholder="收货地址"
-											> 
+									<div class="col-sm-1">
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" name="manager"
+												id="manager2" value="no"> <label class="form-check-label"
+												for="manager2">no</label>
+
+
+										</div>
 									</div>
-								</div>		
+								</div>
+							
 								<div class="form-group row">
 									<label for="inputPassword3" class="col-sm-3 col-form-label">email</label>
 									<div class="col-sm-6">
