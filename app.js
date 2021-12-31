@@ -137,23 +137,16 @@ app.post('/Request',  upload.single('headimg'), (req, res, next) => {
   var password = req.body.password
   var sex = req.body.sex
   var email = req.body.email
-  var headimg = req.file.filename
   var regtime = Mongoose.GetRegTime()
   var manager = req.body.manager
   if(manager=="yes")manager=1
   else manager=0
   Mongoose.User.findOne({"username":username}).exec((err,user) =>{
       if(!user){
-          Mongoose.InsertUser(username, password, sex, email,regtime,headimg,manager);
-          Mongoose.Car.find({},function(err,carList){
-            if(err) return console.log(err)
-            res.render("borrowcar.ejs", {
-                info: "登陆成功！",
-                user:user,
-                carList:carList,
-                key:null
-            })
-            next();
+          Mongoose.InsertUser(username, password, sex, email,regtime,manager);
+          res.render("login.ejs", {
+            info: "注册成功！",
+            key:null
         })
       }else{
           res.render("reg.ejs", {
@@ -255,25 +248,25 @@ app.get('/returncar', (req, res) =>{
   var username=self.username
   var suburl = req.url.split('?')[1]
   var goodid = suburl.split("=")[1]
-  Mongoose.Borrowcar.find({"id":goodid}).exec((err, cc) => {
+  Mongoose.Borrowcar.findOne({"id":goodid}).exec((err, cc) => {
     if(err) return console.log(err)
-    Car.updateOne({"id":cc.id},{"static2":0},(err) => {
+    Mongoose.Car.updateOne({"goodsname":cc.goodsname},{"status2":0},(err) => {
       if(err) return console.log(err)
-      Mongoose.Borrowcar.findOneAndRemove({"id":goodid}, (err, data) => {   
-        Mongoose.Car.find({},function(err,carList){
-          if(err) return console.log(err)
-          res.render("mycar.ejs", {
-              info: "还车成功",
-              user:self,
-              carList:carList,
-              key:null
-          })
+    }) 
+    Mongoose.Borrowcar.findOneAndRemove({"id":goodid}, (err) => {  
+      if(err) return console.log(err)
+    })
+      Mongoose.Borrowcar.find({"username":username}).exec((err, carList) =>{
+        if(err) return console.log(err)
+        res.render("mycar.ejs", {
+            info: "还车成功",
+            user:self,
+            goodsList:carList,
+            key:null
         })
-      })   
-    })  
-  })    
-  
-  
+      })
+          
+  })     
 })
 
 //商品上架
@@ -343,31 +336,6 @@ app.get('/AllCar', (req, res) => {
   })    
 })
 
-//还车
-app.get('/DeleteCar', (req, res) => {
-  var self = req.session.user
-  var username=self.username
-  var suburl = req.url.split('?')[1]
-  var id = suburl.split("=")[1]
-  Mongoose.Borrowcar.findOneAndRemove({"id":id}, (err, data) => {
-    if(err) {
-        console.log("删除商品失败")  
-        console.log(err)
-        return
-    }
-    console.log("删除商品成功")  
-    Mongoose.Borrowcar.find({"username": username}).exec((err, goodsList) => {
-      // console.log(goodsList.length)
-      if(err) return console.log(err)
-      res.render('mycar.ejs', {
-        user:self,
-        username:username,
-        goodsList:goodsList,
-        info:"还车成功！"
-      })
-    })
-  })
-})
 
 //修改密码
 app.post('/RePassword',(req, res)=>{

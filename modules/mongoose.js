@@ -24,7 +24,6 @@ function InsertUser(username, password, sex,email,regtime,headimg, manager) {
         sex: sex,
         email: email,      
         regtime: regtime,
-        headimg: headimg,
         manager: manager
     })
     user.save((err) => {

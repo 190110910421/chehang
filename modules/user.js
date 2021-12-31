@@ -6,7 +6,6 @@ const UserSchema = {
     sex: String,
     email: String,
     regtime: String,
-    headimg: String,
     manager: Number
 }
 
