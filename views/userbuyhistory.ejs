@@ -29,60 +29,61 @@
 								</tr>
 							</thead>
 							<tbody>
-								<% for(var i = 0; i < goodsList.length; i++) { %>
-									<tr>
-										<th scope="row"><%= i %></th>
-										<td><%= goodsList[i].goodname %></td>
-										<td><img src="photo/<%= goodsList[i].photo %>" style="width: 90%"></td>
-										<td><%= goodsList[i].shopusername %></td>
-										<td><%= goodsList[i].time %></td>
-										<td>
-										<c:if test="<%= goodsList[i].status==0 %>">
-										<input type="button"
-											class="btn btn-sm btn-outline-secondary" data-toggle="modal"
-											data-target="#add" data-whatever="@mdo"
-											onclick="Values('<%= goodsList[i].goodid %>')" value="评价" />
-										</c:if>
-										<c:if test="<%= goodsList[i].status==1 %>">
-											<button class="btn btn-sm btn-outline-secondary">已评价</button>
-										</c:if>
-											<div class="modal fade" id="add" tabindex="-1" role="dialog"
-												aria-labelledby="addLabel" aria-hidden="true">
-												<div class="modal-dialog" role="document"
-													style="height: 400px; overflow: auto;">
-													<div class="modal-content">
-														<div class="modal-header">
-															<h5 class="modal-title" id="addLabel">评价商品</h5>
-														</div>
-														<form method="post" action="/AddReply">
-															<input type="hidden" id="id1" name="id" value=''>
-															<div class="modal-body">
+								<% if(goodsList){ %>
+									<% for(var i = 0; i < goodsList.length; i++) { %>
+										<tr>
+											<th scope="row"><%= i %></th>
+											<td><%= goodsList[i].goodname %></td>
+											<td><img src="photo/<%= goodsList[i].photo %>" style="width: 90%"></td>
+											<td><%= goodsList[i].shopusername %></td>
+											<td><%= goodsList[i].time %></td>
+											<td>
+											<% if(goodsList[i].status==0){ %>
+												<input type="button"
+													class="btn btn-sm btn-outline-secondary" data-toggle="modal"
+													data-target="#add" data-whatever="@mdo"
+													onclick="Values('<%= goodsList[i].goodid %>')" value="评价" />
+											<% } %>
+											<% if(goodsList[i].status==0){ %>
+												<button class="btn btn-sm btn-outline-secondary">已评价</button>
+											<% } %>
+												<div class="modal fade" id="add" tabindex="-1" role="dialog"
+													aria-labelledby="addLabel" aria-hidden="true">
+													<div class="modal-dialog" role="document"
+														style="height: 400px; overflow: auto;">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title" id="addLabel">评价商品</h5>
+															</div>
+															<form method="post" action="/AddReply">
+																<input type="hidden" id="id1" name="id" value=''>
+																<div class="modal-body">
 
-																<div class="form-group">
-																	<label class="col-form-label">你的评价是:</label> <input
-																		class="form-control" id="text" name="text"
-																		"></input>
+																	<div class="form-group">
+																		<label class="col-form-label">你的评价是:</label> <input
+																			class="form-control" id="text" name="text"
+																			"></input>
+																	</div>
+
 																</div>
-
-															</div>
-															<div class="modal-footer">
-																<button type="button" class="btn btn-secondary"
-																	data-dismiss="modal">关闭</button>
-																<button type="submit" class="btn btn-primary">提交</button>
-															</div>
-														</form>
+																<div class="modal-footer">
+																	<button type="button" class="btn btn-secondary"
+																		data-dismiss="modal">关闭</button>
+																	<button type="submit" class="btn btn-primary">提交</button>
+																</div>
+															</form>
+														</div>
 													</div>
 												</div>
-											</div>
-											<script type="text/javascript">
-												$("#add").modal("hide");
-												function Values(ID) {
-													$("#id1").val(ID);
-												}
-											</script></td>
-									</tr>
+												<script type="text/javascript">
+													$("#add").modal("hide");
+													function Values(ID) {
+														$("#id1").val(ID);
+													}
+												</script></td>
+										</tr>
+									<% } %>
 								<% } %>
-
 							</tbody>
 
 						</table>

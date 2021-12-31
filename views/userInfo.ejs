@@ -24,15 +24,18 @@
 										<p>性别：<%= user.sex %></p>
 										<p>出生年月：<%= user.birth %></p>
 										<p>收货地址：<%= user.address %></p>		
-										<p>邮箱：<%= user.email %></p>		
+										<p>邮箱：<%= user.email %></p>
 										<p>注册时间：<%= user.username %></p>
-										<c:if test="<%= user.manager==true %>">
+										<% if(user.manager==1){ %>
 											<p>是否是店家：是</p>
-										</c:if> 
-										<c:if test="<%= user.manager==false %>">
+										<% } %>
+										<% if(user.manager==0){ %>
 											<p>是否是店家：否</p>
-										</c:if>
+										<% } %>
 										<p style="color: red"><%= info %></p>
+									</div>
+									<div class="col-lg-6">
+										<img src="upload/<%= user.headimg %>" style="width: 90%">
 									</div>
 								</div>
 							</div>

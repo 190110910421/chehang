@@ -2,7 +2,7 @@ const mongoose = require("./db.js")
 
 const Usershoppingchema = {   
     username: String,
-    goodid: Number,
+    goodid: String,
     number: Number,   
 }
 

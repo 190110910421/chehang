@@ -82,9 +82,11 @@ app.get('/reg.ejs',(req, res)=>{
 
 //修改密码界面
 app.get('/Repassword.ejs',(req, res)=>{
-  var user = req.session.user
+  var self = req.session.user
+  var username=self.username
   res.render('Repassword.ejs', {
-      user:user,
+      user:self,
+      username:username,
       info:null
   })
 
@@ -102,11 +104,18 @@ app.post('/LoginAction',(req, res,next)=>{
       })
       else {
           req.session.user = user
+          // var self = req.session.user
+          // var x=self.username
+          // console.log("session")
+          // console.log(x)
           Mongoose.Goods.find({},function(err,goodslist){
+              console.log(goodslist)
               if(err) return console.log(err)
               res.render("zhuyemian.ejs", {
                   info: "登陆成功！",
-                  user:user
+                  user:user,
+                  goodsList:goodslist,
+                  key:null
               })
               next();
           })
@@ -144,52 +153,70 @@ app.post('/Request',  upload.single('headimg'), (req, res, next) => {
 })
 
 //个人中心
-app.post('/MyInfo', (req, res) => {
+app.get('/MyInfo', (req, res) => {
   var self = req.session.user
-      username=self.username
-
+  var username=self.username
   Mongoose.User.findOne({"username": username}).exec((err, user) => {
       if(err) return console.log(err)
       res.render('userInfo.ejs', {
-          user:user,
+        user:self,
+        username:username,
+        info:null,
       })
   })
 })
 
 //我的足迹
-app.post('/MyTracks', (req, res) => {
+app.get('/MyTracks', (req, res) => {
+  console.log(req.session.user)
   var self = req.session.user
-      username=self.username
+  var username=self.username
 
-  Mongoose.tracks.find({"username": username}).function((err, historyList) => {
+  Mongoose.Tracks.find({"username": username}).exec((err, historyList) => {
       if(err) return console.log(err)
-      res.render('mytracks.ejs', {
-        historyList:historyList,
-      })
+      if(historyList){
+        res.render('mytracks.ejs', {
+          historyList:historyList,
+          user:self,
+          username:username,
+        })
+      }else{
+        res.render('mytracks.ejs', {
+          historyList:null,
+          user:self,
+          username:username,
+        })
+      }
+      
   })
 })
 
 //我的购物车
-app.post('/AllShopping', (req, res) => {
+app.get('/AllShopping', (req, res) => {
   var self = req.session.user
-      username=self.username
+  var username=self.username
 
-  Mongoose.usershopping.find({"username": username}).function((err, goodsList) => {
+  Mongoose.Usershopping.find({"username": username}).exec((err, goodsList) => {
       if(err) return console.log(err)
       res.render('usershopping.ejs', {
+        user:self,
+        username:username,
         goodsList:goodsList,
+        info:null
       })
   })
 })
 
 //我的购买历史
-app.post('/Allbuyhistorygood', (req, res) => {
+app.get('/Allbuyhistorygood', (req, res) => {
   var self = req.session.user
-      username=self.username
+  var username=self.username
 
-  Mongoose.usershopping.find({"username": username}).function((err, goodsList) => {
+  Mongoose.Usershopping.find({"username": username}).exec((err, goodsList) => {
       if(err) return console.log(err)
       res.render('userbuyhistory.ejs', {
+        user:self,
+        username:username,
         goodsList:goodsList,
       })
   })
@@ -205,25 +232,41 @@ app.get('/denchu',(req, res)=>{
 })
 
 //主页面
-app.post('/zhuyemian', (req, res) => {
+app.get('/zhuyemian', (req, res) => {
   var self = req.session.user
-      username=self.username
+  var username=self.username
 
-  Mongoose.goods.find().function((err, goodsList) => {
-      if(err) return console.log(err)
+  Mongoose.Goods.find({},function(err,goodsList){
+    if(err) return console.log(err)
       res.render('zhuyemian.ejs', {
         user:self,
+        username:username,
         goodsList:goodsList,
+        info:null,
+        key:null
       })
   })
+
 })
 
 //成为店家页面
 app.get('/bemanager.ejs',(req, res)=>{
   var self = req.session.user
-  username=self.username
+  var username=self.username
   res.render('bemanager.ejs', {
       user:self,
+      username:username,
+      info:null
+  })
+})
+
+//添加商品页面
+app.get('/addgoods.ejs',(req, res)=>{
+  var self = req.session.user
+  var username=self.username
+  res.render('addgoods.ejs', {
+      user:self,
+      username:username,
       info:null
   })
 })
@@ -231,30 +274,78 @@ app.get('/bemanager.ejs',(req, res)=>{
 //成为店家
 app.post('/BeManager', (req, res) =>{
   var self = req.session.user
-  realname=self.username
+  var username1=self.username
   var username = req.body.username
   var password = req.body.password
-  Mongoose.user.find({"username":username,"password":password}).function((err, user) => {
+  Mongoose.User.find({"username":username,"password":password}).exec((err, user) => {
       if(err) return console.log(err)
       if(!user){
         res.render('bemanager.ejs', {
           user:self,
+          username:username1,
           info:"用户名或密码错误"
         })
       }else{
-          res.render('userInfo.ejs', {
-            user:self,
-            info:"您已成为店家"
-          })
+        Mongoose.Bemanager(username)
+        res.render('userInfo.ejs', {
+          user:self,
+          username:username,
+          info:"您已成为店家"
+        })
       }      
   })
+})
+
+//商品上架
+app.get('/Restoregoods', (req, res) =>{
+  var self = req.session.user
+  var username=self.username
+  var goodid = req.body.id
+  Mongoose.Restoregoods(goodid)
+  Mongoose.Goods.find({"username":username}).exec((err, goodsList) => {
+    if(err) return console.log(err)
+    res.render('usergoods.ejs', {
+      user:self,
+      username:username,
+      goodsList:goodsList,
+    })
+  })    
+})
+
+//商品下架
+app.get('/Invalidgoods', (req, res) =>{
+  var self = req.session.user
+  var username=self.username
+  var goodid = req.body.id
+  Mongoose.Invalidgoods(goodid)
+  Mongoose.Goods.find({"username":username}).exec((err, goodsList) => {
+    if(err) return console.log(err)
+    res.render('usergoods.ejs', {
+      user:self,
+      username:username,
+      goodsList:goodsList,
+    })
+  })    
 })
 
 //添加新商品页面
 app.get('/addgood.ejs',(req, res)=>{
   var self = req.session.user
+  var username=self.username
   res.render('addgood.ejs', {
       user:self,
+      username:username,
+      info:null
+  })
+})
+
+//修改商店页面
+app.get('/modifygoods.ejs',(req, res)=>{
+  var self = req.session.user
+  var username=self.username
+  res.render('modifygoods.ejs', {
+      user:self,
+      username:username,
       info:null
   })
 })
@@ -262,24 +353,28 @@ app.get('/addgood.ejs',(req, res)=>{
 //添加新商品
 app.post('/AddGoods', upload.single('photo'), (req, res) =>{
   var self = req.session.user
-  realname=self.username
+  var username=self.username
   var goodsname = req.body.goodsname
   var price = req.body.price
   var number = req.body.number
   var status = req.body.status
+  if(status=="上架")status=1
+  else status=0
   var photo = req.file.filename
-  Mongoose.goods.findOne({"goodsname":goodsname,"username":username}).exec((err,goods)=>{
+  Mongoose.Goods.findOne({"goodsname":goodsname,"username":username}).exec((err,goods)=>{
     if(err) return console.log(err)
     if(!goods){
-        Mongoose.InsertGoods(plantname, rarity, cost, saleprice, growtime, access ,photo)
-        res.render("addgood.ejs", {
+        Mongoose.InsertGoods(username,goodsname,price,number,status,photo)
+        res.render("addgoods.ejs", {
             info:"添加成功！",
-            user:user
+            user:self,
+            username:username,
         })
     }
     else{
-        res.render('addgood.ejs', {
-            user:user,
+        res.render('addgoods.ejs', {
+            user:self,
+            username:username,
             info:"该商品已经加入商店！"
         })
     }
@@ -287,18 +382,254 @@ app.post('/AddGoods', upload.single('photo'), (req, res) =>{
 })
 
 //小店商品管理
-app.post('/AllGoods', (req, res) => {
+app.get('/AllGoods', (req, res) => {
   var self = req.session.user
-      username=self.username
+  var username=self.username
 
-  Mongoose.goods.find({"username":username}).function((err, goodsList) => {
+  Mongoose.Goods.find({"username":username}).exec((err, goodsList) => {
       if(err) return console.log(err)
       res.render('usergoods.ejs', {
         user:self,
+        username:username,
         goodsList:goodsList,
       })
   })
 })
+
+//商品详细信息
+app.get('/GoodsDetails', (req, res) => {
+  var self = req.session.user
+  var username=self.username
+  var suburl = req.url.split('?')[1]
+  var goodid = suburl.split("=")[1]
+  console.log(goodid)
+  var time = Mongoose.GetRegTime()
+  Mongoose.InsertTracks(username,time,goodid)
+  Mongoose.Goods.findOne({"id":goodid}).exec((err, goods) => {
+      if(err) return console.log(err)
+      console.log(goods)
+      Mongoose.Userreply.find({"goodid":goodid}).exec((err, goodreplyList) => {
+      if(err) return console.log(err)
+        res.render('goods.ejs', {
+          user:self,
+          username:username,
+          good:goods,
+          goodreplyList:goodreplyList,
+        })
+      })
+  })
+})
+
+
+
+//添加商品到购物车
+app.get('/AddShopGoods', (req, res) => {
+  console.log("1")
+  var self = req.session.user
+  var username=self.username
+  var goodid = req.body.id
+  var number = req.body.number
+  Mongoose.Goods.findOne({"id":goodid}).exec((err,goods)=>{
+    if(err) return console.log(err)
+    console.log("2")
+    if(number>goods.number){
+      Mongoose.Goods.find({},function(err, goodsList){
+        if(err) return console.log(err)
+        res.render("zhuyemian.ejs", {
+            info:"商品库存不足",
+            user:self,
+            username:username,
+            goodsList:goodsList,
+            key:null
+        })
+      })
+    }else{
+      console.log("3")
+      Mongoose.InsertShopGoods(goodid,number)
+      Mongoose.Goods.find({},function(err, goodsList){
+        if(err) return console.log(err)
+        res.render("zhuyemian.ejs", {
+            info:"添加成功！",
+            user:self,
+            username:username,
+            goodsList:goodsList,
+            key:null
+        })
+      })
+    }
+  })
+})
+
+//添加评论
+app.post('/AddReply', (req, res) => {
+  var self = req.session.user
+  var username=self.username
+  var goodid = req.body.id
+  var text = req.body.text
+  var time = Mongoose.GetRegTime()
+  Mongoose.InsertReply(goodid,username,text,time)
+  Mongoose.Usershopping.find({"username": username}).exec((err, goodsList) => {
+    if(err) return console.log(err)
+    res.render('userbuyhistory.ejs', {
+      user:self,
+      username:username,
+      goodsList:goodsList,
+    })
+  })
+})
+
+//直接购买商品
+app.post('/Directbuygoods', (req, res) => {
+  var self = req.session.user
+  var username=self.username
+  var goodid = req.body.id
+  var number = req.body.number
+  Mongoose.Goods.findOne({"id":goodid}).exec((err,goods)=>{
+    if(err) return console.log(err)
+    if(number>goods.number){
+      Mongoose.Goods.find({},function(err, goodsList){
+        if(err) return console.log(err)
+        res.render("zhuyemian.ejs", {
+            info:"商品库存不足",
+            user:self,
+            username:username,
+            goodsList:goodsList,
+            key:null
+        })
+      })
+    }else{
+      var price = number*goods.price
+      var time = Mongoose.GetRegTime()
+      Mongoose.BuyGoods(goodid,number,username,time)
+      res.render("buyresult.ejs", {
+          info:"购买成功！",
+          price:price,
+          user:self,
+          username:username,
+      })
+    }           
+  })
+})
+
+//购物车购买商品
+app.post('/Buygoods', (req, res) => {
+  var self = req.session.user
+  var username=self.username
+  var id = req.body.id
+  Mongoose.Usershopping.findOne({"id":id}).exec((err,usershopping)=>{
+    if(err) return console.log(err)
+    Mongoose.Goods.findOne({"id":usershopping.goodid}).exec((err,goods)=>{
+      if(err) return console.log(err)
+      if(usershopping.number>goods.number){
+        Mongoose.Usershopping.find({},function(err, goodsList){
+          if(err) return console.log(err)
+          res.render("usershopping.ejs", {
+              info:"商品库存不足",
+              user:self,
+              username:username,
+              goodsList:goodsList
+          })
+        })
+      }else{
+        var price = usershopping.number*goods.price
+        var time = Mongoose.GetRegTime()
+        Mongoose.BuyGoods(usershopping.goodid,usershopping.number,username,time)
+        res.render("buyresult.ejs", {
+            info:"购买成功！",
+            price:price,
+            user:self,
+            username:username,
+        })
+      }    
+    })       
+  })
+})
+
+//购物车删除商品
+app.post('/Deletegoods', (req, res) => {
+  var self = req.session.user
+  var username=self.username
+  var id = req.body.id
+  Mongoose.Usershopping.findOneAndRemove({"id":id}, (err, data) => {
+    if(err) {
+        if(callback){callback()}
+        console.log("删除商品失败")  
+        console.log(err)
+        return
+    }
+    if(callback){callback()}
+    console.log("删除商品成功")  
+  })
+})
+
+//修改商品属性
+app.post('/ModifyGoods', (req, res) => {
+  var self = req.session.user
+  var username=self.username
+  var goodsname = req.body.goodsname
+  var number = req.body.number
+  var price = req.body.price
+  Mongoose.Goods.findOne({"goodsname":goodsname,"price":price,"username":username}).exec((err,goods)=>{
+    if(err) return console.log(err)
+    if(!goods){
+      Mongoose.Goods.find({},function(err, goodsList){
+        if(err) return console.log(err)
+        res.render("modifygoods.ejs", {
+            info:"请把信息填写完整!",
+            user:self,
+            username:username,
+            goodsList:goodsList
+        })
+      })
+    }else{
+      Mongoose.ModifyGoods(goodsname,number,username,price) 
+      res.render("modifygoods.ejs", {
+          user:self,
+          username:username,
+          info:"修改成功！"
+      })
+    }           
+  })
+})
+
+//修改密码
+app.post('/RePassword',(req, res)=>{
+  var self = req.session.user
+  var username=self.username
+  var password = req.body.oldpassword;
+  var newpassword1 = req.body.newpassword1;
+  var newpassword2 = req.body.newpassword2;
+  if(password == newpassword1){    //判断就密码新密码是否一致
+          res.render("setpwd.ejs", {
+              user:user,
+              info: "新密码不能与原密码一致！"
+          })
+  }
+  if(newpassword2 != newpassword1){    //判断两次新密码是否一致
+        res.render("setpwd.ejs", {
+            user:user,
+            info: "两个新密码不一致！"
+        })
+}
+  Mongoose.User.findOne({"username": username, "password": password}).exec((err, user) => {
+      if(err) return console.log(err)
+      if(!user) res.render("setpwd.ejs", {
+          info: "原密码错误！",
+          user: self,
+          username:username,
+      })
+      else{
+          Mongoose.setPwd(user.username,newpassword1)
+          res.render("login.ejs", {
+              user:null,
+              info: "修改密码成功！请重新登陆！"
+          })
+      }
+
+  })
+})
+
+
 
 
 app.listen(port, () => {

@@ -29,20 +29,21 @@
 									</tr>
 								</thead>
 								<tbody>
-									<% for(var i = 0; i < historyList.length; i++) { %>
-										<tr>
-											<th scope="row"><%= i %></th>
-											<td><%= historyList[i].goodsname %></td>
-											<td><img src="photo/<%= historyList[i].photo %>" style="width: 90%"></td>
-											<td><%= historyList[i].shopusername %></td>
-											<td><%= historyList[i].clicktime %></td>
-											<td>
-												<a type="button" class="btn btn-primary"
-														href="/GoodsDetails?id=<%= historyList[i].goodid %>">查看详情</a>
-											</td>
-										</tr>
+									<% if(historyList){%>
+										<% for(var i = 0; i < historyList.length; i++) { %>
+											<tr>
+												<th scope="row"><%= i %></th>
+												<td><%= historyList[i].goodsname %></td>
+												<td><img src="photo/<%= historyList[i].photo %>" style="width: 90%"></td>
+												<td><%= historyList[i].shopusername %></td>
+												<td><%= historyList[i].clicktime %></td>
+												<td>
+													<a type="button" class="btn btn-primary"
+															href="/GoodsDetails?id=<%= historyList[i].goodid %>">查看详情</a>
+												</td>
+											</tr>
+										<% } %>
 									<% } %>
-									
 								</tbody>
 								
 							</table>

@@ -38,7 +38,7 @@
 			<p class="lead font-weight-normal">本作品可以使你体验模拟开网店和在网上购物的快乐.</p>
 			<a class="btn btn-outline-secondary" href="#">项目说明书</a>
 			<p class="lead font-weight-normal">BY 190110910435章鑫鹏</p>
-			<p style="color: red"><= info ></p>
+			<p style="color: red"><%= info %></p>
 		</div>
 		<div class="product-device shadow-sm d-none d-md-block"></div>
 		<div
@@ -50,7 +50,7 @@
 		action="/SearchGoods">
 		<div class="mx-auto">
 			<input class="form-control col-md-10" type="search"
-				placeholder="${key==null?'search':key}" aria-label="Search" name="search">
+				placeholder="<%= key==null?'search':key %>" aria-label="Search" name="search">
 			<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
 		</div>
 	</form>
@@ -58,13 +58,13 @@
 		<div class="container">
 
 			<div class="row">
-
+				<% if(goodsList){ %>
 				<% for(var i = 0; i < goodsList.length; i++) { %>
-				 <c:if test="<%= goodsList[i].status==true %>">
+				 <% if(goodsList[i].status==1){ %>
 					<div class="col-md-4">
 						<div class="card mb-4 shadow-sm">
 						<a href="/GoodsDetails?id=<%= goodsList[i].id %>">
-							<img src="photo/<%= goodsList[i].photo %>" style="width: 100%" height="225" href="/GoodsDetails?id=<%= goodsList[i].id %>">
+							<img src="upload/<%= goodsList[i].photo %>" style="width: 100%" height="225" href="/GoodsDetails?id=<%= goodsList[i].id %>">
 							</a>
 							<div class="card-body">
 								<div class="d-flex justify-content-between align-items-center">
@@ -154,6 +154,8 @@
 						</div>
 					</div>
 				</c:if>
+				<% } %>
+				<% } %>
 				<% } %>
 			</div>
 		</div>

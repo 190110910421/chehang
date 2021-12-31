@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title><%= good.goodsname%>商品</title>
+<title><%= good.goodname %>商品</title>
 <!-- bootstrap框架 -->
 <%-include('bt.ejs')%>
 </head>
@@ -25,7 +25,7 @@
 									<p>商家：<%= good.username %></p>
 								</div>
 								<div class="col-lg-6">
-									<img src="photo/<%= good.photo %>" style="width: 90%">
+									<img src="upload/<%= good.photo %>" style="width: 90%">
 								</div>
 							</div>
 							<div class="btn-group">
@@ -113,14 +113,16 @@
 				<div class="card">
 					<div class="card-header">用户评论</div>
 					<div class="card-body">
-					<% for(var i = 0; i < goodreplyList.length; i++) { %>
-						<div class="card">
-							<div class="card-header">用户<%= goodreplyList[i].username %>的评价是：</div>
-							<div class="card-body">
-								<p><%= goodreplyList[i].text %></p>	
-								<p><small>评论时间：<%= goodreplyList[i].time %></small></p>
+					<%if(goodreplyList){%>
+						<% for(var i = 0; i < goodreplyList.length; i++) { %>
+							<div class="card">
+								<div class="card-header">用户<%= goodreplyList[i].username %>的评价是：</div>
+								<div class="card-body">
+									<p><%= goodreplyList[i].text %></p>	
+									<p><small>评论时间：<%= goodreplyList[i].time %></small></p>
+								</div>
 							</div>
-						</div>
+						<% } %>
 					<% } %>
 					</div>
 				</div>

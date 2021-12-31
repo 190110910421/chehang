@@ -2,7 +2,8 @@ const mongoose = require("./db.js")
 
 const TracksSchema = {   
     username: String,
-    goodid: Number,
+    goodid: String,
+    goodsname:String,
     clicktime: String,
     photo: String
 }

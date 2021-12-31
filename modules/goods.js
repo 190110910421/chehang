@@ -1,6 +1,7 @@
 const mongoose = require("./db.js")
 
-const GoodsSchema = {   
+const GoodsSchema = {
+    id:String,
     username: String,
     goodsname: String,
     price: Number,
